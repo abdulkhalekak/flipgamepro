@@ -3,8 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coinflip পার্টনার ও বেটিং সিস্টেম</title>
+    <title>Coinflip - ভার্চুয়াল বেটিং সিস্টেম (শুধু খেলার জন্য)</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
@@ -13,49 +16,47 @@
             justify-content: center;
             align-items: center;
             margin: 0;
-            color: #333;
             padding: 20px;
-            box-sizing: border-box;
         }
         .container {
             background: #fff;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
             text-align: center;
-            max-width: 400px;
+            max-width: 450px;
             width: 100%;
         }
         h1 {
             margin-top: 0;
             color: #2c3e50;
-            font-size: 22px;
+            font-size: 24px;
         }
         .balance-card {
-            background: #f8f9fa;
-            border: 2px dashed #3498db;
-            border-radius: 10px;
-            padding: 10px;
-            font-size: 18px;
+            background: #f0f8ff;
+            border: 2px solid #3498db;
+            border-radius: 15px;
+            padding: 12px;
+            font-size: 20px;
             font-weight: bold;
             margin-bottom: 20px;
             color: #2c3e50;
         }
         .balance-card span {
             color: #27ae60;
+            font-size: 28px;
         }
         .coin-box {
             perspective: 1000px;
-            margin: 20px auto;
-            width: 100px;
-            height: 100px;
+            margin: 15px auto;
+            width: 110px;
+            height: 110px;
         }
         .coin {
             width: 100%;
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 1s ease-in-out;
         }
         .side {
             position: absolute;
@@ -66,14 +67,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 35px;
+            font-size: 40px;
             font-weight: bold;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 5px 10px rgba(0,0,0,0.1);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2), 0 8px 15px rgba(0,0,0,0.2);
         }
         .heads {
             background: #f1c40f;
             border: 4px solid #d4ac0d;
-            color: #fff;
+            color: #7f8c8d;
         }
         .tails {
             background: #e67e22;
@@ -87,7 +88,6 @@
         }
         label {
             font-weight: bold;
-            font-size: 14px;
             color: #555;
             display: block;
             margin-bottom: 5px;
@@ -96,15 +96,14 @@
             width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            border-radius: 8px;
             font-size: 16px;
         }
         .btn-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin: 15px 0;
         }
         button {
             background: #2ecc71;
@@ -113,32 +112,48 @@
             padding: 12px;
             font-size: 16px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 40px;
             cursor: pointer;
             transition: 0.2s;
         }
-        button:hover { background: #27ae60; }
-        button:disabled { background: #bdc3c7; cursor: not-allowed; }
+        button:hover { background: #27ae60; transform: scale(1.02);}
+        button:disabled { background: #bdc3c7; cursor: not-allowed; transform: none; }
         .btn-blue { background: #3498db; }
         .btn-blue:hover { background: #2980b9; }
         .btn-red { background: #e74c3c; }
         .btn-red:hover { background: #c0392b; }
-        
+        .btn-warning { background: #f39c12; }
+        .btn-warning:hover { background: #e67e22; }
         #result {
-            margin-top: 15px;
+            margin: 15px 0 5px;
             font-size: 18px;
             font-weight: bold;
-            min-height: 25px;
+            min-height: 50px;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 12px;
         }
-        
-        /* Transaction Section */
         .tx-section {
-            margin-top: 25px;
+            margin-top: 20px;
             padding-top: 15px;
-            border-top: 1px solid #eee;
+            border-top: 2px solid #ecf0f1;
         }
-
-        /* Animation Classes */
+        .inline-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .inline-group input {
+            flex: 1;
+        }
+        .inline-group button {
+            flex: 0.5;
+        }
+        small {
+            color: #7f8c8d;
+            display: block;
+            margin-top: 8px;
+        }
         .flip-heads { animation: flipH 1.2s forwards; }
         .flip-tails { animation: flipT 1.2s forwards; }
         @keyframes flipH { 0% { transform: rotateY(0); } 100% { transform: rotateY(1440deg); } }
@@ -147,21 +162,206 @@
 </head>
 <body>
 
-    <div class="container">
-        <h1>🪙 Coinflip পার্টনার বেটিং</h1>
-        
-        <div class="balance-card">
-            বর্তমান ব্যালেন্স: <span id="user-balance">৫০০</span> ৳
+<div class="container">
+    <h1>🪙 Coinflip • ভার্চুয়াল বেটিং</h1>
+    
+    <div class="balance-card">
+        💰 ব্যালেন্স: <span id="user-balance">1000</span> ৳
+    </div>
+    
+    <div class="coin-box">
+        <div class="coin" id="coin">
+            <div class="side heads">H</div>
+            <div class="side tails">T</div>
         </div>
-        
-        <div class="coin-box">
-            <div class="coin" id="coin">
-                <div class="side heads">H</div>
-                <div class="side tails">T</div>
-            </div>
-        </div>
+    </div>
 
-        <div class="form-group">
-            <label for="bet-side">আপনার পক্ষ বেছে নিন:</label>
-            <select id="bet-side">
-                <option value="
+    <div class="form-group">
+        <label>🔮 আপনার পক্ষ বেছে নিন:</label>
+        <select id="bet-side">
+            <option value="heads">🟡 Heads (মাথা)</option>
+            <option value="tails">🟠 Tails (লেজ)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>💰 বাজির পরিমাণ (৳):</label>
+        <input type="number" id="bet-amount" value="50" min="10" step="10">
+    </div>
+
+    <div class="btn-grid">
+        <button id="flip-btn" class="btn-blue">🪙 টস করুন & বাজি ধরুন</button>
+    </div>
+
+    <div id="result">
+        ✨ ফলাফল এখানে দেখাবে ✨
+    </div>
+
+    <!-- টাকা জমা ও উত্তোলন সিস্টেম (ভার্চুয়াল) -->
+    <div class="tx-section">
+        <h3>💸 ভার্চুয়াল লেনদেন (ডেমো)</h3>
+        <div class="inline-group">
+            <input type="number" id="deposit-amount" placeholder="জমার টাকা" value="100" min="10">
+            <button id="deposit-btn" class="btn-warning">📥 জমা করুন</button>
+        </div>
+        <div class="inline-group" style="margin-top: 8px;">
+            <input type="number" id="withdraw-amount" placeholder="উত্তোলনের টাকা" value="50" min="10">
+            <button id="withdraw-btn" class="btn-red">📤 উত্তোলন করুন</button>
+        </div>
+        <small>⚠️ শুধুমাত্র ভার্চুয়াল খেলার জন্য। কোনো বাস্তব লেনদেন নয়।</small>
+    </div>
+</div>
+
+<script>
+    // ---------- ভার্চুয়াল ব্যালেন্স ----------
+    let balance = 1000;   // ডেমো ভার্চুয়াল টাকা
+    
+    // DOM এলিমেন্টস
+    const balanceSpan = document.getElementById('user-balance');
+    const flipBtn = document.getElementById('flip-btn');
+    const betSideSelect = document.getElementById('bet-side');
+    const betAmountInput = document.getElementById('bet-amount');
+    const resultDiv = document.getElementById('result');
+    const coin = document.getElementById('coin');
+    const depositBtn = document.getElementById('deposit-btn');
+    const withdrawBtn = document.getElementById('withdraw-btn');
+    const depositInput = document.getElementById('deposit-amount');
+    const withdrawInput = document.getElementById('withdraw-amount');
+
+    // ব্যালেন্স আপডেট ফাংশন
+    function updateBalanceUI() {
+        balanceSpan.innerText = Math.floor(balance);
+    }
+
+    // লক করা (অ্যানিমেশনের সময় বাটন অক্ষম)
+    let isFlipping = false;
+
+    // কয়েন টস ফাংশন (বাজি সহ)
+    function flipCoinWithBet() {
+        // লক থাকলে রিটার্ন
+        if (isFlipping) {
+            resultDiv.innerHTML = "⚠️ আগের টস শেষ হোক, একটু অপেক্ষা করুন।";
+            return;
+        }
+
+        // বাজির তথ্য নেওয়া
+        const selectedSide = betSideSelect.value;   // "heads" or "tails"
+        let betAmount = parseFloat(betAmountInput.value);
+        
+        // ভ্যালিডেশন
+        if (isNaN(betAmount) || betAmount <= 0) {
+            resultDiv.innerHTML = "❌ দয়া করে সঠিক বাজির পরিমাণ লিখুন (মিনিমাম ১০)";
+            return;
+        }
+        betAmount = Math.floor(betAmount);
+        if (betAmount < 10) {
+            resultDiv.innerHTML = "❌ বাজির পরিমাণ কমপক্ষে ১০ ৳ হতে হবে।";
+            return;
+        }
+        if (betAmount > balance) {
+            resultDiv.innerHTML = `❌ আপনার ব্যালেন্স কম! ব্যালেন্স: ${balance} ৳`;
+            return;
+        }
+
+        // লক & রিসেট এনিমেশন
+        isFlipping = true;
+        flipBtn.disabled = true;
+        
+        // আগের অ্যানিমেশন রিমুভ
+        coin.classList.remove('flip-heads', 'flip-tails');
+        void coin.offsetHeight; // রি-রেন্ডার ফোর্স
+        
+        // র্যান্ডম ফলাফল (true=Heads, false=Tails)
+        const isHeadsResult = Math.random() < 0.5;
+        const winSide = isHeadsResult ? "heads" : "tails";
+        
+        // অ্যানিমেশন অ্যাসাইন
+        if (isHeadsResult) {
+            coin.classList.add('flip-heads');
+        } else {
+            coin.classList.add('flip-tails');
+        }
+        
+        // ফলাফল দেখানো এবং বাজি নিষ্পত্তি (অ্যানিমেশন শেষে)
+        setTimeout(() => {
+            let winMessage = "";
+            let newBalance = balance;
+            const isWin = (selectedSide === winSide);
+            
+            if (isWin) {
+                const winAmount = betAmount * 2;  // জিতলে ২x ফেরত (বাজি + সমান লাভ)
+                newBalance = balance + betAmount;   // আসলে জিতলে net profit = betAmount, total = balance + betAmount
+                // আরও পরিষ্কার: আগের ব্যালেন্সে বাজি কাটা হয়নি, তাই জিতলে balance + betAmount
+                winMessage = `🎉 আপনি জিতেছেন! +${betAmount} ৳`;
+                resultDiv.innerHTML = `🏆 জয়! ফলাফল: ${winSide === "heads" ? "মাথা (Heads)" : "লেজ (Tails)"}. ${winMessage}<br>নতুন ব্যালেন্স: ${newBalance} ৳`;
+            } else {
+                newBalance = balance - betAmount;
+                winMessage = `😞 আপনি হেরেছেন! ${betAmount} ৳ কেটে নেওয়া হয়েছে।`;
+                resultDiv.innerHTML = `💔 পরাজয়! ফলাফল: ${winSide === "heads" ? "মাথা (Heads)" : "লেজ (Tails)"}. ${winMessage}<br>নতুন ব্যালেন্স: ${newBalance} ৳`;
+            }
+            
+            // ব্যালেন্স আপডেট
+            balance = newBalance;
+            if (balance < 0) balance = 0;
+            updateBalanceUI();
+            
+            // বাটন আনলক
+            isFlipping = false;
+            flipBtn.disabled = false;
+            
+            // ব্যালেন্স যদি ০ হয় তাহলে সতর্কতা
+            if (balance <= 0) {
+                resultDiv.innerHTML += "<br>⚠️ আপনার ব্যালেন্স শেষ! দয়া করে 'জমা করুন' এ ক্লিক করে ভার্চুয়াল টাকা যোগ করুন।";
+            }
+        }, 1200);  // অ্যানিমেশনের সময় ১.২ সেকেন্ড
+    }
+
+    // ভার্চুয়াল ডিপোজিট ফাংশন
+    function depositVirtual() {
+        let amount = parseFloat(depositInput.value);
+        if (isNaN(amount) || amount <= 0) {
+            resultDiv.innerHTML = "❌ জমার জন্য সঠিক ধনরাশি দিন (ধনাত্মক সংখ্যা)।";
+            return;
+        }
+        amount = Math.floor(amount);
+        balance += amount;
+        updateBalanceUI();
+        resultDiv.innerHTML = `✅ ডেমো জমা: ${amount} ৳ যোগ হয়েছে। নতুন ব্যালেন্স: ${balance} ৳`;
+        depositInput.value = 100;
+    }
+    
+    // ভার্চুয়াল উত্তোলন ফাংশন (শুধু ভার্চুয়াল সিস্টেম)
+    function withdrawVirtual() {
+        let amount = parseFloat(withdrawInput.value);
+        if (isNaN(amount) || amount <= 0) {
+            resultDiv.innerHTML = "❌ উত্তোলনের জন্য সঠিক ধনরাশি দিন।";
+            return;
+        }
+        amount = Math.floor(amount);
+        if (amount > balance) {
+            resultDiv.innerHTML = `❌ পর্যাপ্ত ব্যালেন্স নেই! আপনার ব্যালেন্স: ${balance} ৳`;
+            return;
+        }
+        balance -= amount;
+        updateBalanceUI();
+        resultDiv.innerHTML = `💸 ডেমো উত্তোলন: ${amount} ৳ কেটে নেওয়া হয়েছে (ভার্চুয়াল)। নতুন ব্যালেন্স: ${balance} ৳`;
+        withdrawInput.value = 50;
+    }
+
+    // ইভেন্ট লিসেনার
+    flipBtn.addEventListener('click', flipCoinWithBet);
+    depositBtn.addEventListener('click', depositVirtual);
+    withdrawBtn.addEventListener('click', withdrawVirtual);
+    
+    // প্রাথমিক UI আপডেট
+    updateBalanceUI();
+    
+    // কিছু অতিরিক্ত ক্লিন: ইনপুটে অনাকাঙ্ক্ষিত মান প্রতিরোধ
+    betAmountInput.addEventListener('change', function() {
+        let val = parseInt(this.value);
+        if (isNaN(val) || val < 10) this.value = 10;
+        if (val > balance && balance > 0) this.value = balance;
+    });
+</script>
+</body>
+</html>
